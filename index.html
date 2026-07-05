@@ -94,6 +94,10 @@
 </head>
 <body>
   <div class="card">
+    <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px;">
+      <button type="button" id="langTr" style="background:none; border:1px solid transparent; color:inherit; opacity:0.5; cursor:pointer; font-size:13px; padding:4px 8px; border-radius:8px;">TR</button>
+      <button type="button" id="langEn" style="background:none; border:1px solid transparent; color:inherit; opacity:0.5; cursor:pointer; font-size:13px; padding:4px 8px; border-radius:8px;">EN</button>
+    </div>
     <h1 id="title">Book an Appointment</h1>
     <p class="subtitle" id="subtitle">Loading studio…</p>
 
@@ -132,60 +136,99 @@
 <script>
 (function () {
   var FUNCTIONS_BASE = 'https://qzchujgzsurrlgjwungd.supabase.co/functions/v1';
-  var isTr = (navigator.language || '').toLowerCase().indexOf('tr') === 0;
 
-  var t = isTr ? {
-    titleLoading: 'Randevu Talebi',
-    subtitleLoading: 'Stüdyo bilgisi yükleniyor…',
-    titleFound: function (name) { return name; },
-    subtitleFound: 'Randevu talebi gönderin, stüdyo sizinle iletişime geçecek.',
-    notFound: 'Stüdyo bulunamadı. Bağlantıyı kontrol edin.',
-    labelName: 'Ad Soyad',
-    labelPhone: 'Telefon',
-    labelEmail: 'E-posta',
-    labelDesc: 'Dövme Açıklaması',
-    labelDate: 'Tercih Edilen Tarih',
-    labelPhoto: 'Dövme fotoğrafı (isteğe bağlı)',
-    photoRemove: 'Kaldır',
-    photoError: 'Bu görsel okunamadı. Lütfen JPEG veya PNG deneyin.',
-    submit: 'Talep Gönder',
-    sending: 'Gönderiliyor…',
-    success: 'Talebiniz alındı! Stüdyo en kısa sürede sizinle iletişime geçecek.',
-    genericError: 'Bir hata oluştu. Lütfen tekrar deneyin.',
-    tooMany: 'Çok fazla talep gönderdiniz. Lütfen daha sonra tekrar deneyin.',
-    missingStudio: 'Geçersiz bağlantı — stüdyo belirtilmemiş.'
-  } : {
-    titleLoading: 'Book an Appointment',
-    subtitleLoading: 'Loading studio…',
-    titleFound: function (name) { return name; },
-    subtitleFound: 'Send a booking request and the studio will get back to you.',
-    notFound: 'Studio not found. Please check the link.',
-    labelName: 'Full Name',
-    labelPhone: 'Phone',
-    labelEmail: 'Email',
-    labelDesc: 'Tattoo Description',
-    labelDate: 'Preferred Date',
-    labelPhoto: 'Tattoo photo (optional)',
-    photoRemove: 'Remove',
-    photoError: 'Could not read this image. Please try a JPEG or PNG.',
-    submit: 'Send Request',
-    sending: 'Sending…',
-    success: 'Your request has been sent! The studio will reach out to you soon.',
-    genericError: 'Something went wrong. Please try again.',
-    tooMany: 'Too many requests. Please try again later.',
-    missingStudio: 'Invalid link — no studio specified.'
+  var translations = {
+    tr: {
+      titleLoading: 'Randevu Talebi',
+      subtitleLoading: 'Stüdyo bilgisi yükleniyor…',
+      titleFound: function (name) { return name; },
+      subtitleFound: 'Randevu talebi gönderin, stüdyo sizinle iletişime geçecek.',
+      notFound: 'Stüdyo bulunamadı. Bağlantıyı kontrol edin.',
+      labelName: 'Ad Soyad',
+      labelPhone: 'Telefon',
+      labelEmail: 'E-posta',
+      labelDesc: 'Dövme Açıklaması',
+      labelDate: 'Tercih Edilen Tarih',
+      labelPhoto: 'Dövme fotoğrafı (isteğe bağlı)',
+      photoRemove: 'Kaldır',
+      photoError: 'Bu görsel okunamadı. Lütfen JPEG veya PNG deneyin.',
+      submit: 'Talep Gönder',
+      sending: 'Gönderiliyor…',
+      success: 'Talebiniz alındı! Stüdyo en kısa sürede sizinle iletişime geçecek.',
+      genericError: 'Bir hata oluştu. Lütfen tekrar deneyin.',
+      tooMany: 'Çok fazla talep gönderdiniz. Lütfen daha sonra tekrar deneyin.',
+      missingStudio: 'Geçersiz bağlantı — stüdyo belirtilmemiş.'
+    },
+    en: {
+      titleLoading: 'Book an Appointment',
+      subtitleLoading: 'Loading studio…',
+      titleFound: function (name) { return name; },
+      subtitleFound: 'Send a booking request and the studio will get back to you.',
+      notFound: 'Studio not found. Please check the link.',
+      labelName: 'Full Name',
+      labelPhone: 'Phone',
+      labelEmail: 'Email',
+      labelDesc: 'Tattoo Description',
+      labelDate: 'Preferred Date',
+      labelPhoto: 'Tattoo photo (optional)',
+      photoRemove: 'Remove',
+      photoError: 'Could not read this image. Please try a JPEG or PNG.',
+      submit: 'Send Request',
+      sending: 'Sending…',
+      success: 'Your request has been sent! The studio will reach out to you soon.',
+      genericError: 'Something went wrong. Please try again.',
+      tooMany: 'Too many requests. Please try again later.',
+      missingStudio: 'Invalid link — no studio specified.'
+    }
   };
 
-  document.getElementById('labelName').innerHTML = t.labelName + ' <span class="required">*</span>';
-  document.getElementById('labelPhone').innerHTML = t.labelPhone + ' <span class="required">*</span>';
-  document.getElementById('labelEmail').innerHTML = t.labelEmail + ' <span class="required">*</span>';
-  document.getElementById('labelDesc').innerHTML = t.labelDesc + ' <span class="required">*</span>';
-  document.getElementById('labelDate').textContent = t.labelDate;
-  document.getElementById('labelPhoto').textContent = t.labelPhoto;
-  document.getElementById('photoRemove').textContent = t.photoRemove;
-  document.getElementById('submitBtn').textContent = t.submit;
-  document.getElementById('title').textContent = t.titleLoading;
-  document.getElementById('subtitle').textContent = t.subtitleLoading;
+  var LANG_KEY = 'inkflow_booking_lang';
+  var t = translations.en;
+  var currentLang = 'en';
+  var lastStudioName = null; // re-render the found title on language switch
+
+  var langTrBtn = document.getElementById('langTr');
+  var langEnBtn = document.getElementById('langEn');
+
+  // Required fields always carry the * marker — applied fresh on every
+  // language switch so it can never silently drop.
+  function setRequiredLabel(id, text) {
+    document.getElementById(id).innerHTML = text + ' <span class="required">*</span>';
+  }
+
+  function applyLanguage(lang) {
+    currentLang = lang;
+    t = translations[lang];
+    document.documentElement.lang = lang;
+    localStorage.setItem(LANG_KEY, lang);
+
+    langTrBtn.style.opacity = lang === 'tr' ? '1' : '0.5';
+    langTrBtn.style.borderColor = lang === 'tr' ? 'var(--primary)' : 'transparent';
+    langEnBtn.style.opacity = lang === 'en' ? '1' : '0.5';
+    langEnBtn.style.borderColor = lang === 'en' ? 'var(--primary)' : 'transparent';
+
+    setRequiredLabel('labelName', t.labelName);
+    setRequiredLabel('labelPhone', t.labelPhone);
+    setRequiredLabel('labelEmail', t.labelEmail);
+    setRequiredLabel('labelDesc', t.labelDesc);
+    document.getElementById('labelDate').textContent = t.labelDate;
+    document.getElementById('labelPhoto').textContent = t.labelPhoto;
+    document.getElementById('photoRemove').textContent = t.photoRemove;
+    document.getElementById('submitBtn').textContent = t.submit;
+    document.getElementById('title').textContent =
+      lastStudioName ? t.titleFound(lastStudioName) : t.titleLoading;
+    document.getElementById('subtitle').textContent =
+      lastStudioName ? t.subtitleFound : t.subtitleLoading;
+  }
+
+  langTrBtn.addEventListener('click', function () { applyLanguage('tr'); });
+  langEnBtn.addEventListener('click', function () { applyLanguage('en'); });
+
+  var saved = localStorage.getItem(LANG_KEY);
+  var initialLang = saved === 'tr' || saved === 'en'
+    ? saved
+    : ((navigator.language || '').toLowerCase().indexOf('tr') === 0 ? 'tr' : 'en');
+  applyLanguage(initialLang);
 
   var params = new URLSearchParams(window.location.search);
   var slug = (params.get('studio') || '').trim();
@@ -248,6 +291,7 @@
     fetch(FUNCTIONS_BASE + '/get-studio-info?slug=' + encodeURIComponent(slug))
       .then(function (res) { return res.ok ? res.json() : Promise.reject(); })
       .then(function (data) {
+        lastStudioName = data.name;
         document.getElementById('title').textContent = t.titleFound(data.name);
         document.getElementById('subtitle').textContent = t.subtitleFound;
       })
