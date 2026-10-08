@@ -4,81 +4,103 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>InkFlow — Book an Appointment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #0d0d0d;
-    --surface: #1e1e1e;
-    --primary: #bb86fc;
-    --secondary: #03dac6;
-    --error: #cf6679;
-    --text: #ffffff;
-    --text-dim: rgba(255, 255, 255, 0.6);
+    --bg: #F4F4F2;
+    --card: #FFFFFF;
+    --tile: #F0F0EE;
+    --line: #E7E7E4;
+    --ink: #111111;
+    --on-ink: #FFFFFF;
+    --muted: #6B6B68;
+    --faint: #A3A39F;
+    --success: #2B7349;
+    --success-bg: #E8F4EC;
+    --danger: #C0362C;
+    --danger-bg: #FBEAE8;
+    --font: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0B0B0B;
+      --card: #161616;
+      --tile: #222222;
+      --line: #262626;
+      --ink: #F2F2F0;
+      --on-ink: #0B0B0B;
+      --muted: #9A9A96;
+      --faint: #5C5C59;
+      --success: #7FCB98;
+      --success-bg: #16301F;
+      --danger: #F08A80;
+      --danger-bg: #3A1A17;
+    }
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    min-height: 100vh;
     background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 24px 16px;
+    color: var(--ink);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
   }
-  .card {
-    width: 100%;
-    max-width: 480px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    padding: 32px 24px;
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
-  h1 {
-    font-size: 22px;
-    margin: 0 0 4px;
-    text-align: center;
-  }
-  .subtitle {
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 14px;
-    margin: 0 0 28px;
-  }
-  label {
-    display: block;
+  .eyebrow::before { content: "// "; color: var(--faint); }
+  .langbar { display: flex; justify-content: flex-end; gap: 4px; }
+  .langbar button {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--muted);
+    cursor: pointer;
     font-size: 13px;
-    color: var(--text-dim);
-    margin: 16px 0 6px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-family: inherit;
   }
+  .langbar button.active { color: var(--ink); background: var(--card); border-color: var(--line); }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+  }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 16px 0 6px; }
   input, textarea {
     width: 100%;
-    padding: 12px 14px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 13px 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: 12px;
-    color: var(--text);
+    color: var(--ink);
     font-size: 15px;
     font-family: inherit;
   }
-  input:focus, textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
-  textarea { resize: vertical; min-height: 90px; }
+  input::placeholder, textarea::placeholder { color: var(--faint); }
+  input:focus, textarea:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+  textarea { resize: vertical; min-height: 96px; }
   .honeypot { position: absolute; left: -9999px; top: -9999px; }
-  button {
+  .btn {
     width: 100%;
-    margin-top: 24px;
-    padding: 14px;
-    background: var(--primary);
-    color: #000;
+    padding: 15px;
+    background: var(--ink);
+    color: var(--on-ink);
     border: none;
     border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
     cursor: pointer;
   }
-  button:disabled { opacity: 0.6; cursor: default; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
   .message {
     margin-top: 16px;
     padding: 12px 14px;
@@ -87,16 +109,29 @@
     text-align: center;
     display: none;
   }
-  .message.success { display: block; background: rgba(3, 218, 198, 0.15); color: var(--secondary); }
-  .message.error { display: block; background: rgba(207, 102, 121, 0.15); color: var(--error); }
-  .required { color: var(--error); }
+  .message.success { display: block; background: var(--success-bg); color: var(--success); }
+  .message.error { display: block; background: var(--danger-bg); color: var(--danger); }
+  a { color: var(--ink); }
+
+  body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
+  .card { width: 100%; max-width: 480px; padding: 24px 24px 28px; }
+  h1 { font-size: 24px; letter-spacing: -0.02em; margin: 16px 0 4px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin: 0 0 12px; }
+  .submit { margin-top: 24px; }
+  .required { color: var(--danger); }
+  .photo-preview { display: none; margin-top: 8px; }
+  .photo-preview img { max-width: 120px; max-height: 120px; border-radius: 8px; display: block; border: 1px solid var(--line); }
+  .link-btn { margin-top: 6px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 0; font-family: inherit; text-decoration: underline; }
+  .powered { text-align: center; margin: 28px auto 40px; font-size: 12px; color: var(--faint); }
+  .powered a { color: inherit; text-decoration: none; }
+  .powered a:hover { color: var(--muted); }
 </style>
 </head>
 <body>
   <div class="card">
-    <div style="display:flex; justify-content:flex-end; gap:4px; margin-bottom:4px;">
-      <button type="button" id="langTr" style="background:none; border:1px solid transparent; color:inherit; opacity:0.5; cursor:pointer; font-size:13px; padding:4px 8px; border-radius:8px;">TR</button>
-      <button type="button" id="langEn" style="background:none; border:1px solid transparent; color:inherit; opacity:0.5; cursor:pointer; font-size:13px; padding:4px 8px; border-radius:8px;">EN</button>
+    <div class="langbar">
+      <button type="button" id="langTr">TR</button>
+      <button type="button" id="langEn">EN</button>
     </div>
     <h1 id="title">Book an Appointment</h1>
     <p class="subtitle" id="subtitle">Loading studio…</p>
@@ -119,18 +154,29 @@
 
       <label id="labelPhoto" for="photo">Tattoo photo (optional)</label>
       <input type="file" id="photo" accept="image/*" />
-      <div id="photoPreviewWrap" style="display:none; margin-top:8px;">
-        <img id="photoPreview" alt="" style="max-width:120px; max-height:120px; border-radius:8px; display:block;" />
-        <button type="button" id="photoRemove" style="margin-top:6px; background:none; border:none; color:#CF6679; cursor:pointer; font-size:13px; padding:0;">Remove</button>
+      <div id="photoPreviewWrap" class="photo-preview">
+        <img id="photoPreview" alt="" />
+        <button type="button" id="photoRemove" class="link-btn">Remove</button>
       </div>
 
       <!-- Honeypot: hidden from real users, bots fill every field. -->
       <label class="honeypot" for="website">Website</label>
       <input class="honeypot" type="text" id="website" tabindex="-1" autocomplete="off" />
 
-      <button type="submit" id="submitBtn">Send Request</button>
+      <button type="submit" id="submitBtn" class="btn submit">Send Request</button>
       <div class="message" id="message"></div>
     </form>
+  </div>
+
+  <!--
+    Büyüme döngüsü: bu sayfayı her stüdyo kendi Instagram biyografisine
+    koyuyor, dolayısıyla sayfayı gören her müşteri potansiyel bir kanal.
+    Bilinçli olarak ölçülü: stüdyonun kendi markasının önüne geçmemeli.
+  -->
+  <div class="powered">
+    <a href="https://inkflowpro.studio" target="_blank" rel="noopener">
+      <span id="poweredText">InkFlow ile hazırlandı</span>
+    </a>
   </div>
 
 <script>
@@ -139,6 +185,7 @@
 
   var translations = {
     tr: {
+      poweredBy: 'InkFlow ile hazırlandı',
       titleLoading: 'Randevu Talebi',
       subtitleLoading: 'Stüdyo bilgisi yükleniyor…',
       titleFound: function (name) { return name; },
@@ -160,6 +207,7 @@
       missingStudio: 'Geçersiz bağlantı — stüdyo belirtilmemiş.'
     },
     en: {
+      poweredBy: 'Powered by InkFlow',
       titleLoading: 'Book an Appointment',
       subtitleLoading: 'Loading studio…',
       titleFound: function (name) { return name; },
@@ -202,10 +250,8 @@
     document.documentElement.lang = lang;
     localStorage.setItem(LANG_KEY, lang);
 
-    langTrBtn.style.opacity = lang === 'tr' ? '1' : '0.5';
-    langTrBtn.style.borderColor = lang === 'tr' ? 'var(--primary)' : 'transparent';
-    langEnBtn.style.opacity = lang === 'en' ? '1' : '0.5';
-    langEnBtn.style.borderColor = lang === 'en' ? 'var(--primary)' : 'transparent';
+    langTrBtn.classList.toggle('active', lang === 'tr');
+    langEnBtn.classList.toggle('active', lang === 'en');
 
     setRequiredLabel('labelName', t.labelName);
     setRequiredLabel('labelPhone', t.labelPhone);
@@ -214,6 +260,7 @@
     document.getElementById('labelDate').textContent = t.labelDate;
     document.getElementById('labelPhoto').textContent = t.labelPhoto;
     document.getElementById('photoRemove').textContent = t.photoRemove;
+    document.getElementById('poweredText').textContent = t.poweredBy;
     document.getElementById('submitBtn').textContent = t.submit;
     document.getElementById('title').textContent =
       lastStudioName ? t.titleFound(lastStudioName) : t.titleLoading;
@@ -232,6 +279,13 @@
 
   var params = new URLSearchParams(window.location.search);
   var slug = (params.get('studio') || '').trim();
+
+  // Hangi kanaldan gelindiği. Stüdyo linki Instagram biyografisine, WhatsApp'a
+  // veya QR koda ayrı ayrı ?src= ile koyuyor; hangisinin gerçekten talep
+  // getirdiğini ölçmek için. Sunucu tarafı ayrıca temizliyor ve kısaltıyor,
+  // burası yalnızca ilk süzgeç.
+  var source = (params.get('src') || '').trim().toLowerCase()
+    .replace(/[^a-z0-9_-]/g, '').slice(0, 40);
   var form = document.getElementById('bookingForm');
   var messageEl = document.getElementById('message');
   var submitBtn = document.getElementById('submitBtn');
@@ -315,7 +369,8 @@
       tattoo_description: document.getElementById('description').value.trim(),
       preferred_date: document.getElementById('preferredDate').value,
       website: document.getElementById('website').value,
-      photo_base64: photoBase64
+      photo_base64: photoBase64,
+      source: source || null
     };
 
     fetch(FUNCTIONS_BASE + '/create-booking-request', {
